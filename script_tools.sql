@@ -13,10 +13,10 @@ from
 where
     dt = '2019-12-20';
 
-UPDATE t_product_2 SET goods_status = '待售', modifytime = '2019-12-21' WHERE goods_id = '001';
-INSERT INTO t_product_2(goods_id, goods_status, createtime, modifytime) VALUES
-('005', '待审核', '2019-12-21', '2019-12-21'),
-('006', '待审核', '2019-12-21', '2019-12-21');
+update t_product_2 set goods_status = '待售', modifytime = '2019-12-21' where goods_id = '001';
+insert into t_product_2(goods_id, goods_status, createtime, modifytime)
+values ('005', '待审核', '2019-12-21', '2019-12-21'),
+        ('006', '待审核', '2019-12-21', '2019-12-21');
 
 
 -- 3.存在重复行的表乐left join结果验证
