@@ -36,6 +36,14 @@ select age(timestamp '2007-09-15');
 
 select extract(year from now());
 
+select extract(week from  now() + interval '6 day');
+
+select now() + interval '5 day';
+
+select extract(month from now());
+
+select now();
+
 select extract(doy from now());
 
 select extract(epoch from now());
