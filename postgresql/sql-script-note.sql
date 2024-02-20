@@ -55,3 +55,5 @@ select timestamp with time zone 'epoch' + 1369755555 * interval '1 second';
 select cast(to_char(current_date, 'yyyymmdd') as integer); -- 当日
 
 select cast(to_char(current_date - interval '1 day', 'yyyymmdd') as integer); -- 昨日
+
+select 1;
