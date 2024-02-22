@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### CSC code ###
+csc_script.sql
