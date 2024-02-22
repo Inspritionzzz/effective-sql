@@ -37,4 +37,4 @@ out/
 .vscode/
 
 ### CSC code ###
-csc_script.sql
+csc-code/
