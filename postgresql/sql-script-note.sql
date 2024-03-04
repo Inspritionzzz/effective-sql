@@ -61,6 +61,9 @@ select extract(week from cast('2024-02-22' as date));
 select 1;
 select 1;
 
-SELECT column_name, data_type, is_nullable, column_default
-FROM information_schema.columns
-WHERE table_name = 'table1';
+select
+	column_name, data_type, is_nullable, column_default
+from information_schema.columns
+where table_name = 'dm_allbiz_idx';
+
+
