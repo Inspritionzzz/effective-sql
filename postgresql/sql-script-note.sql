@@ -1,3 +1,13 @@
+-- 数据查询
+select prod_name from public.products;
+
+select * from tysql5.products;
+
+SELECT date_trunc('week', current_date) + interval '1 day' AS first_day;
+
+select
+
+
 -- 日期函数（参考：https://blog.csdn.net/weixin_40594160/article/details/100139852）
 select now();
 
