@@ -1,13 +1,17 @@
--- 数据查询
-select prod_name from public.products;
-
+-- 1.检索数据
+-- 1.1 简单查询
+select prod_name from tysql5.products;
 select * from tysql5.products;
+select distinct vend_id from tysql5.products;   -- distinct作用于所有的列；
+select prod_name from tysql5.products fetch first 5 rows only; -- DB2语法
+-- select prod_name from tysql5.products where rownum <= 5; -- Oracle语法
+-- select top 5 prod_name from tysql5.products; -- Sql Server语法
+-- select prod_name from tysql5.products limit 5; -- Mysql、PostgreSQL语法
+select prod_name from tysql5.products limit 5 offset 5; -- 从0开始计数，limit 1 offset 1会检索第2行，而不是第1行；
 
-SELECT date_trunc('week', current_date) + interval '1 day' AS first_day;
+-- 1.2
 
-select
-
-
+select date_trunc('week', current_date) + interval '1 day' AS first_day;
 -- 日期函数（参考：https://blog.csdn.net/weixin_40594160/article/details/100139852）
 select now();
 
