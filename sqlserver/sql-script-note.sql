@@ -3375,6 +3375,12 @@ RETURNS BIT
 EXTERNAL NAME testdb.[testdb.digits].RegexIsMatch;
 GO
 
+
+
+
+
+
+
 SELECT dbo.RegexIsMatch(
  N'dejan@solidq.com',
  N'^([\w-]+\.)*?[\w-]+@[\w-]+\.([\w-]+\.)*?[\w]+$');
