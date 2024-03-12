@@ -3379,7 +3379,7 @@ GO
 
 
 
-
+-- juset a test
 
 SELECT dbo.RegexIsMatch(
  N'dejan@solidq.com',
