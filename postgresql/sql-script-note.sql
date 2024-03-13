@@ -8,8 +8,12 @@ select prod_name from tysql5.products fetch first 5 rows only; -- DB2语法
 -- select top 5 prod_name from tysql5.products; -- Sql Server语法
 -- select prod_name from tysql5.products limit 5; -- Mysql、PostgreSQL语法
 select prod_name from tysql5.products limit 5 offset 5; -- 从0开始计数，limit 1 offset 1会检索第2行，而不是第1行；
+select prod_id, prod_name, prod_price from tysql5.products order by 2, 3;
+select prod_id, prod_name, prod_price from tysql5.products order by prod_name desc, prod_price; -- 不指定则默认ASC
 
--- 1.2
+-- 1.2 过滤数据
+
+
 
 select date_trunc('week', current_date) + interval '1 day' AS first_day;
 -- 日期函数（参考：https://blog.csdn.net/weixin_40594160/article/details/100139852）
