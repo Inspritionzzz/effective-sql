@@ -12,6 +12,12 @@ select prod_id, prod_name, prod_price from tysql5.products order by 2, 3;
 select prod_id, prod_name, prod_price from tysql5.products order by prod_name desc, prod_price; -- 不指定则默认ASC
 
 -- 1.2 过滤数据
+select * from tysql5.products;
+select prod_id, prod_price, prod_name from tysql5.products where vend_id = 'DLL01' OR vend_id = 'BRS01';
+select vend_id, prod_name, prod_price from tysql5.products where vend_id = 'DLL01' or vend_id = 'BRS01' and prod_price >= 10;   -- and的优先级高于or
+select prod_name, prod_price from tysql5.products where (vend_id = 'DLL01' OR vend_id = 'BRS01') and prod_price >= 10;
+select prod_name, prod_price from tysql5.products where vend_id in ('DLL01','BRS01') order by prod_name;    -- in比or执行更快
+select prod_name from tysql5.products where not vend_id = 'DLL01' order by prod_name;
 
 
 
