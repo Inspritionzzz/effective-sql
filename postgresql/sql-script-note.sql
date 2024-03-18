@@ -105,6 +105,8 @@ select now() + interval '5 day';
 
 select extract(month from now());
 
+select extract(week from now());
+
 select now();
 
 select extract(doy from now());
