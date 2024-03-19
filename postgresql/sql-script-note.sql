@@ -1,18 +1,15 @@
 -- 1.检索数据
 -- 1.1 简单查询
-select
-    prod_name
+select prod_name
 from tysql5.products;
 
-select
-    *
+select *
 from tysql5.products;
 
 select distinct vend_id
 from tysql5.products;   -- distinct作用于所有的列；
 
-select
-    prod_name
+select prod_name
 from tysql5.products
 fetch first 5 rows only; -- DB2语法
 
@@ -20,43 +17,117 @@ fetch first 5 rows only; -- DB2语法
 -- select top 5 prod_name from tysql5.products; -- Sql Server语法
 -- select prod_name from tysql5.products limit 5; -- Mysql、PostgreSQL语法
 
-select
-    prod_name
+select prod_name
 from tysql5.products
 limit 5 offset 5; -- 从0开始计数，limit 1 offset 1会检索第2行，而不是第1行；
 
-select
-    prod_id, prod_name, prod_price
+select prod_id, prod_name, prod_price
 from tysql5.products order by 2, 3;
 
-select
-    prod_id, prod_name, prod_price
+select prod_id, prod_name, prod_price
 from tysql5.products order by prod_name desc, prod_price; -- 不指定则默认ASC
 
 -- 1.2 过滤数据
-select
-    *
+select *
 from tysql5.products;
 
-select
-    prod_id, prod_price, prod_name
-from tysql5.products where vend_id = 'DLL01' OR vend_id = 'BRS01';
+select prod_id, prod_price, prod_name
+from tysql5.products
+where vend_id = 'DLL01' OR vend_id = 'BRS01';
+
+select vend_id, prod_name, prod_price
+from tysql5.products
+where vend_id = 'DLL01' or vend_id = 'BRS01' and prod_price >= 10;   -- and的优先级高于or
+
+select prod_name, prod_price
+from tysql5.products
+where (vend_id = 'DLL01' OR vend_id = 'BRS01') and prod_price >= 10;
+
+select prod_name, prod_price
+from tysql5.products
+where vend_id in ('DLL01','BRS01') order by prod_name;    -- in比or执行更快
+
+select prod_name
+from tysql5.products
+where not vend_id = 'DLL01' order by prod_name;
+
+select prod_id, prod_name
+from tysql5.products
+where prod_name like 'Fish%';
+
+select prod_id, prod_name
+from tysql5.products
+where prod_name like '%bean bag%';
+
+select prod_name
+from tysql5.products
+where prod_name like 'F%y'; -- like能匹配0个、1个、多个字符；
+
+select prod_name
+from tysql5.products
+where prod_name like 'F%y%'; -- 应对数据库自动补充空格的情况；
+
+select prod_name
+from tysql5.products
+where prod_name like '%'; -- 不会匹配null；
+
+select prod_id, prod_name
+from tysql5.products
+where prod_name like '__ inch teddy bear'; -- _匹配单个字符；
+
+select prod_id, prod_name
+from tysql5.products
+where prod_name like '__ inch teddy bear'; -- ；
+
+select cust_contact
+from tysql5.customers
+where ltrim(cust_contact) like '[JM]%' -- ???
+order by cust_contact;
+
+select cust_contact
+from tysql5.customers
+where cust_contact like '[^JM]%' -- ???
+order by cust_contact;
+
+-- 1.3 计算字段
+-- select vend_name + '(' + vend_country + ')'
+-- from tysql5.vendors  -- 适用于Sql Server
+-- order by vend_name;
+
+select vend_name || '(' || vend_country || ')'
+from tysql5.vendors -- 适用于DB2、Oracle、PostgreSQL、SQLite
+order by vend_name;
+
+select concat(vend_name, ' (', vend_country, ')')
+from tysql5.vendors -- MySQL、MariaDB
+order by vend_name;
 
 select
-    vend_id, prod_name, prod_price
-from tysql5.products where vend_id = 'DLL01' or vend_id = 'BRS01' and prod_price >= 10;   -- and的优先级高于or
+    trim(vend_name) || ' (' || rtrim(vend_country) || ')' as vend_title  -- 去掉右边所有的空格，另外还有ltrim()、trim()
+from tysql5.vendors
+order by vend_name;
+
+-- 注：使用别名的场景包括：实际列名中包含不合法的字符（如空格）时需要重新命名；
+select prod_id, quantity, item_price
+from tysql5.orderitems
+where order_num = 20008;
 
 select
-    prod_name, prod_price
-from tysql5.products where (vend_id = 'DLL01' OR vend_id = 'BRS01') and prod_price >= 10;
+       prod_id,
+       quantity,
+       item_price,
+       quantity * item_price as expanded_price
+from tysql5.orderitems
+where order_num = 20008;
 
-select
-    prod_name, prod_price
-from tysql5.products where vend_id in ('DLL01','BRS01') order by prod_name;    -- in比or执行更快
 
-select
-    prod_name
-from tysql5.products where not vend_id = 'DLL01' order by prod_name;
+
+
+
+
+
+
+
 
 
 
