@@ -1,4 +1,3 @@
--- 1.检索数据
 -- 1.1 简单查询
 select prod_name
 from tysql5.products;
@@ -120,41 +119,47 @@ select
 from tysql5.orderitems
 where order_num = 20008;
 
-
-
-
-
-
-
-
-
-
-
-
-select date_trunc('week', current_date) + interval '1 day' AS first_day;
+-- 1.4 函数
+-- 各DBMS通用型函数：
+-- （1）提取字符串：substr() substring()
+-- （2）数据类型转换：cast() convert()
+-- （3）取当前日期：current_date curdate() getdate() date() sysdate
+-- 大多数SQL支持的函数：
+-- 1.4.1 用于处理文本字符串（如删除或填充值，转换值为大写或小写）的文本函数。
+    -- LEFT()（或使用子字符串函数） 返回字符串左边的字符
+    -- LENGTH()（也使用DATALENGTH()或LEN()） 返回字符串的长度
+    -- LOWER() 将字符串转换为小写
+    -- LTRIM() 去掉字符串左边的空格
+    -- RIGHT()（或使用子字符串函数） 返回字符串右边的字符
+    -- RTRIM() 去掉字符串右边的空格
+    -- SUBSTR()或SUBSTRING() 提取字符串的组成部分
+    -- SOUNDEX() 返回字符串的SOUNDEX值（postgre不支持）
+    -- UPPER() 将字符串转换为大写
+-- 1.4.2 用于在数值数据上进行算术操作（如返回绝对值，进行代数运算）的数值函数。
+    -- ABS() 返回一个数的绝对值
+    -- COS() 返回一个角度的余弦
+    -- EXP() 返回一个数的指数值
+    -- PI() 返回圆周率 π 的值
+    -- SIN() 返回一个角度的正弦
+    -- SQRT() 返回一个数的平方根
+    -- TAN() 返回一个角度的正切
+-- 1.4.3 用于处理日期和时间值并从这些值中提取特定成分（如返回两个日期之差，检查日期有效性）的日期和时间函数。
 -- 日期函数（参考：https://blog.csdn.net/weixin_40594160/article/details/100139852）
+select date_part('year', current_date);
+select extract('year' from current_date);
+select substr(''); -- 函数名不区分大小写
+select upper('abc');
+select date_trunc('week', current_date) + interval '1 day' AS first_day;
 select now();
-
 select current_timestamp;
-
-select current_date;
-
 select current_time;
-
 select now() + interval '2 years';  -- 2015-04-12 15:49:03.168851+08 (1 row)
-
 select now() + interval '2 year'; -- 2015-04-12 15:49:12.378727+08 (1 row)
-
 select now() + interval '2 y'; -- 2015-04-12 15:49:25.46986+08 (1 row)
-
 select now() + interval '2 Y'; -- 2015-04-12 15:49:28.410853+08 (1 row)
-
 select now() + interval '2Y'; -- 2015-04-12 15:49:31.122831+08 (1 row)
-
 select now() + interval '1 month';
-
 select now() - interval '3 week';
-
 -- 说明：
 -- interval 可以不写，其值可以是：
 -- Abbreviation	Meaning
@@ -165,41 +170,68 @@ select now() - interval '3 week';
 -- H	Hours
 -- M	Minutes (in the time part)
 -- S	Seconds
-
 select age(timestamp '2007-09-15');
-
 select extract(year from now());
-
 select extract(week from  now() + interval '6 day');
-
 select now() + interval '5 day';
-
 select extract(month from now());
-
 select extract(week from now());
-
 select now();
-
 select extract(doy from now());
-
 select extract(epoch from now());
-
 select now() + '10 min';
-
 select timestamp with time zone 'epoch' + 1369755555 * interval '1 second';
-
 select cast(to_char(current_date, 'yyyymmdd') as integer); -- 当日
-
 select cast(to_char(current_date - interval '1 day', 'yyyymmdd') as integer); -- 昨日
-
 select extract(week from cast('2024-02-29' as date));
+-- 1.4.4 用于生成美观好懂的输出内容的格式化函数（如用语言形式表达出日期，用货币符号和千分位表示金额）。
+-- 1.4.5 返回 DBMS 正使用的特殊信息（如返回用户登录信息）的系统函数。
 
-select 1;
-select 1;
+-- 1.5 汇总数据
+-- 1.5.1 聚集函数
+-- AVG() 返回某列的平均值：列名必须作为函数参数给出，函数忽略列值为null 的行；
+select avg(prod_price) as avg_price
+from tysql5.products;
 
+select avg(prod_price) as avg_price
+from tysql5.products
+where vend_id = 'DLL01';
+-- COUNT() 返回某列的行数：如果指定列名，则 COUNT()函数会忽略指定列的值为 NULL 的行，但如果 COUNT()函数中用的是星号（*），则不忽略。
+select count(*) as avg_price -- 使用 COUNT(*)对表中行的数目进行计数，不管表列中包含的是空值（NULL）还是非空值。
+from tysql5.products;
+
+select count(prod_id) as avg_price -- 使用 COUNT(column)对特定列中具有值的行进行计数，忽略 NULL 值。
+from tysql5.products;
+-- MAX() 返回某列的最大值：虽然 MAX()一般用来找出最大的数值或日期值，但许多（并非所有）DBMS 允许将它用来返回任意列中的最大值，
+--                        包括返回文本列中的最大值。在用于文本数据时，MAX()返回按该列排序后的最后一行。MAX()函数忽略列值为 NULL 的行。
+select max(prod_price) as max_price
+from tysql5.products;
+-- MIN() 返回某列的最小值:虽然 MIN()一般用来找出最小的数值或日期值，但许多（并非所有）DBMS 允许将它用来返回任意列中的最小值，
+--                       包括返回文本列中的最小值。在用于文本数据时，MIN()返回该列排序后最前面的行。MIN()函数忽略列值为 NULL 的行。
+select min(prod_price) as min_price
+from tysql5.products;
+-- SUM() 返回某列值之和:SUM()函数忽略列值为 NULL 的行。
+select sum(quantity) as items_ordered
+from tysql5.orderitems
+where order_num = 20005;
+
+select sum(item_price * quantity) as items_ordered
+from tysql5.orderitems
+where order_num = 20005;
+-- 1.5.2 聚集不同值：
+-- （1）如果指定列名，则 DISTINCT 只能用于 COUNT()。DISTINCT 不能用于 COUNT(*)。类似地，DISTINCT 必须使用列名，不能用于计算或表达式。
+-- （2）虽然 DISTINCT 从技术上可用于 MIN()和 MAX()，但这样做实际上没有价值。一个列中的最小值和最大值不管是否只考虑不同值，结果都是相同的。
+select avg(distinct prod_price) as avg_price
+from tysql5.products
+where vend_id = 'DLL01';
+-- 1.5.3 组合聚集函数
 select
-	column_name, data_type, is_nullable, column_default
-from information_schema.columns
-where table_name = 'dm_allbiz_idx';
+    count(*) as num_items
+    ,min(prod_price) as price_min
+    ,max(prod_price) as price_max
+    ,avg(prod_price) as price_avg
+from tysql5.products;
+
+
 
 

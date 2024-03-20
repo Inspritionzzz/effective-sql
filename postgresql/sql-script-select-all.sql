@@ -14,3 +14,8 @@ select
     ||  '-' ||
     cast(to_char(current_timestamp - (extract (dow from current_timestamp) - 7 || ' day')::interval, 'yyyymmdd') as varchar(20))
     || '）';
+
+select
+	column_name, data_type, is_nullable, column_default
+from information_schema.columns
+where table_name = '';
