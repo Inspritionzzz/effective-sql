@@ -232,6 +232,49 @@ select
     ,avg(prod_price) as price_avg
 from tysql5.products;
 
+-- 1.6 数据分组
+-- 1.6.1 group by
+-- （1）GROUP BY 子句可以包含任意数目的列，因而可以对分组进行嵌套，更细致地进行数据分组。
+-- （2）如果在 GROUP BY 子句中嵌套了分组，数据将在最后指定的分组上进行汇总。换句话说，在建立分组时，指定的所有列都一起计算（所以
+--      不能从个别的列取回数据）。
+-- （3）GROUP BY 子句中列出的每一列都必须是检索列或有效的表达式（但不能是聚集函数）。如果在 SELECT 中使用表达式，则必须在 GROUP BY
+--      子句中指定相同的表达式。不能使用别名。
+-- （4）大多数 SQL 实现不允许 GROUP BY 列带有长度可变的数据类型（如文本或备注型字段）。
+-- （5） 除聚集计算语句外，SELECT 语句中的每一列都必须在 GROUP BY 子句中给出。
+-- （6）如果分组列中包含具有 NULL 值的行，则 NULL 将作为一个分组返回。如果列中有多行 NULL 值，它们将分为一组。
+-- （7）GROUP BY 子句必须出现在 WHERE 子句之后，ORDER BY 子句之前。
+select
+    vend_id, count(*) as num_prods
+from tysql5.products
+group by vend_id;
+-- 1.6.2 having
+-- （1）where过滤行，having过滤分组；
+-- （2）where 在数据分组前进行过滤，having在数据分组后进行过滤，where排除的行不包括在分组中；
+select
+    cust_id, count(*) as orders
+from tysql5.orders
+group by cust_id
+having count(*) >= 2;
 
+select
+    vend_id, count(*) as num_prods
+from tysql5.products
+where prod_price >= 4
+group by vend_id
+having count(*) >= 2;
 
-
+-- 1.6.3 分组和排序
+-- 一般在使用 GROUP BY 子句时，应该也给出 ORDER BY 子句。这是保证数据正确排序的唯一方法。千万不要仅依赖 GROUP BY 排序数据。
+select
+    order_num, count(*) as items
+from tysql5.orderitems
+group by order_num
+having count(*) >= 3
+order by items, order_num;
+-- SELECT 子句顺序:
+-- SELECT 要返回的列或表达式 是
+-- FROM 从中检索数据的表 仅在从表选择数据时使用
+-- WHERE 行级过滤 否
+-- GROUP BY 分组说明 仅在按组计算聚集时使用
+-- HAVING 组级过滤 否
+-- ORDER BY 输出排序顺序 否
