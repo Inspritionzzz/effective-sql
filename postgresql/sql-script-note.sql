@@ -278,3 +278,83 @@ order by items, order_num;
 -- GROUP BY 分组说明 仅在按组计算聚集时使用
 -- HAVING 组级过滤 否
 -- ORDER BY 输出排序顺序 否
+
+-- 1.7 使用子查询
+-- 1.7.1 使用子查询进行过滤
+select cust_id
+from tysql5.orders
+where order_num in (select order_num
+                    from tysql5.orderitems
+                    where prod_id = 'RGAN01');
+
+select cust_name, cust_contact
+from tysql5.customers
+where cust_id in (select cust_id
+                  from tysql5.orders
+                  where order_num in (select order_num
+                                      from tysql5.orderitems
+                                      where prod_id = 'RGAN01'));
+
+-- 1.7.2 作为计算资源使用子查询
+select
+    cust_name,
+    cust_state,
+    (select count(*)
+     from tysql5.orders
+     where tysql5.orders.cust_id =tysql5. customers.cust_id) as orders -- 需要使用完全限定列名；
+from tysql5.customers
+order by cust_name;
+
+select
+    cust_name,
+    cust_state,
+    (select count(*)
+     from tysql5.orders
+     where cust_id = cust_id) as orders -- 需要使用完全限定列名；
+from tysql5.customers
+order by cust_name;
+
+-- 1.8 联结表
+select vend_name, prod_name, prod_price
+from tysql5.vendors, tysql5.products
+where vendors.vend_id = products.vend_id;
+
+select vend_name, prod_name, prod_price
+from tysql5.vendors, tysql5.products;
+
+select vend_name, prod_name, prod_price
+from tysql5.vendors
+inner join tysql5.products on vendors.vend_id = products.vend_id;
+
+select prod_name, vend_name, prod_price, quantity
+from tysql5.orderitems, tysql5.products, tysql5.vendors
+where products.vend_id = vendors.vend_id
+      and orderitems.prod_id = products.prod_id
+      and order_num = 20007;
+
+select cust_name, cust_contact
+from tysql5.customers, tysql5.orders, tysql5.orderitems
+where customers.cust_id = orders.cust_id
+      and orderitems.order_num = orders.order_num
+      and prod_id = 'RGAN01';
+
+-- 1.9 创建高级联结
+-- 1.9.1 表别名
+select
+    rtrim(vend_name) || ' (' || rtrim(vend_country) || ')' as vend_title
+from tysql5.vendors
+order by vend_name;
+
+select cust_name, cust_contact
+from tysql5.customers as c, tysql5.orders as o, tysql5.orderitems as oi
+where c.cust_id = o.cust_id
+      and oi.order_num = o.order_num
+      and prod_id = 'RGAN01';
+-- 1.9.2 使用不同类型的联结
+-- 自连接
+select cust_id, cust_name, cust_contact
+from tysql5.customers
+where cust_name = (select cust_name
+                   from tysql5.customers
+                   where cust_contact = 'jim jones');
+
