@@ -351,10 +351,148 @@ where c.cust_id = o.cust_id
       and oi.order_num = o.order_num
       and prod_id = 'RGAN01';
 -- 1.9.2 使用不同类型的联结
--- 自连接
+-- 自联结：多数DBMS处理联结比处理子查询快的多；
 select cust_id, cust_name, cust_contact
 from tysql5.customers
 where cust_name = (select cust_name
                    from tysql5.customers
-                   where cust_contact = 'jim jones');
+                   where cust_contact = 'Jim Jones');
 
+select c1.cust_id, c1.cust_name, c1.cust_contact
+from tysql5.customers as c1, tysql5.customers as c2
+where c1.cust_name = c2.cust_name
+      and c2.cust_contact = 'Jim Jones';
+-- 自然联结
+select
+    c.*, o.order_num, o.order_date,
+    oi.prod_id, oi.quantity, oi.item_price
+from tysql5.customers as c, tysql5.orders as o, tysql5.orderitems as oi
+where c.cust_id = o.cust_id
+and oi.order_num = o.order_num
+and prod_id = 'RGAN01';
+
+-- 外联结
+select customers.cust_id, orders.order_num
+from tysql5.customers
+left outer join tysql5.orders on customers.cust_id = orders.cust_id;
+
+select customers.cust_id, orders.order_num
+from tysql5.customers
+right outer join tysql5.orders on customers.cust_id = orders.cust_id;
+
+select customers.cust_id, orders.order_num
+from tysql5.customers
+full outer join tysql5.orders on customers.cust_id = orders.cust_id;
+
+-- 使用带聚集函数的联结
+select
+    customers.cust_id
+    ,count(orders.order_num) as num_ord
+from tysql5.customers
+inner join tysql5.orders on customers.cust_id = orders.cust_id
+group by customers.cust_id;
+
+select
+    customers.cust_id
+    ,count(orders.order_num) as num_ord
+from tysql5.customers
+left outer join tysql5.orders on customers.cust_id = orders.cust_id
+group by customers.cust_id;
+
+-- 1.10 组合查询
+-- union
+-- （1）每个查询必须包含相同的列、表达式或聚集函数，各个列不需要以相同的次序列出；
+-- （2）列数据类型必须兼容；
+-- （3）union自动去除重复的行；
+select cust_name, cust_contact, cust_email
+from tysql5.customers
+where cust_state in ('IL','IN','MI')
+    union
+select cust_name, cust_contact, cust_email
+from tysql5.customers
+where cust_name = 'Fun4All';
+-- union all
+select cust_name, cust_contact, cust_email
+from tysql5.customers
+where cust_state in ('IL','IN','MI')
+    union all
+select cust_name, cust_contact, cust_email
+from tysql5.customers
+where cust_name = 'Fun4All';
+
+select cust_name, cust_contact, cust_email
+from tysql5.customers
+where cust_state in ('IL','IN','MI')
+    union
+select cust_name, cust_contact, cust_email
+from tysql5.customers
+where cust_name = 'Fun4All'
+order by cust_name, cust_contact; -- 会排序整个结果集；
+
+-- 1.11 插入数据
+-- 1.11.1 插入完整行
+insert into tysql5.customers
+values(1000000006, 'Toy Land', '123 Any Street', 'New York', 'NY', '11111', 'USA', NULL, NULL);
+-- 注：
+-- （1）虽然这种语法很简单，但并不安全，应该尽量避免使用。上面的 SQL 语句高度依赖于表中列的定义次序，还依赖于其容易获得的次序信息。即
+--      使可以得到这种次序信息，也不能保证各列在下一次表结构变动后保持完全相同的次序。因此，编写依赖于特定列次序的 SQL 语句是很不安全
+--      的，这样做迟早会出问题。
+-- （2）如果不提供列名，则必须给每个表列提供一个值；如果提供列名，则必须给列出的每个列一个值。否则，就会产生一条错误消息，相应的行不能成功插入。
+insert into tysql5.customers(cust_id, cust_name, cust_address, cust_city, cust_state, cust_zip, cust_country, cust_contact, cust_email)
+values(1000000006, 'Toy Land', '123 Any Street', 'New York', 'NY', '11111', 'USA', NULL, NULL); --表的结构改变，这条INSERT 语句仍然能正确工作。
+
+-- 1.11.2省略列需要满足以下某个条件：
+-- （1）该列定义为允许 NULL 值（无值或空值）；
+-- （2）在表定义中给出默认值；
+insert into tysql5.customers(cust_id, cust_name, cust_address, cust_city, cust_state, cust_zip, cust_country)
+values(1000000006, 'Toy Land', '123 Any Street', 'New York', 'NY', '11111', 'USA');
+
+-- 1.11.3 插入检索出的数据
+insert into tysql5.customers(cust_id,
+                             cust_contact,
+                             cust_email,
+                             cust_name,
+                             cust_address,
+                             cust_city,
+                             cust_state,
+                             cust_zip,
+                             cust_country)
+select cust_id,
+       cust_contact,
+       cust_email,
+       cust_name,
+       cust_address,
+       cust_city,
+       cust_state,
+       cust_zip,
+       cust_country
+from tysql5.custnew;
+-- 注：DBMS不关心select返回的列名，它使用的是列的位置，因此 SELECT 中的第一列（不管其列名）将用来填充表列中指定的第一列，第二列将用来填充表列中
+-- 指定的第二列，如此等等。
+
+-- 1.11.4 从一个表复制到另一个表
+create table tysql5.custcopy as select * from tysql5.customers;
+-- select * into tysql5.custcopy from tysql5.customers;    -- SqlServer写法
+
+-- 1.12 更新和删除数据
+-- 1.12.1 update
+update tysql5.customers
+set cust_email = 'kim@thetoystore.com'
+where cust_id = 1000000005;
+
+update tysql5.customers
+set cust_contact = 'Sam Roberts',
+    cust_email = 'sam@toyland.com'
+where cust_id = 1000000006;
+
+update tysql5.customers
+set cust_email = null
+where cust_id = 1000000006; -- 删除指定的列；
+
+-- 1.12.2 delete
+-- delete不删除表本身，删除全表建议用truncate，速度更快；
+delete from tysql5.customers
+where cust_id = 1000000006; -- 删除指定的行；
+
+-- undo
+-- 1.13 创建和操纵表
