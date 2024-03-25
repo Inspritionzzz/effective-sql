@@ -531,6 +531,7 @@ CREATE TABLE tysql5.orderitems
 -- DROP TABLE tysql5.custcopy;
 
 -- 1.13.4 重命名表
-
+-- 每个 DBMS 对表重命名的支持有所不同。对于这个操作，不存在严格的标准。DB2、MariaDB、MySQL、Oracle 和 PostgreSQL 用户使用 RENAME
+-- 语句，SQL Server 用户使用 sp_rename 存储过程，SQLite 用户使用 ALTER TABLE 语句。
 
 
