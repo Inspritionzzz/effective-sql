@@ -496,3 +496,41 @@ where cust_id = 1000000006; -- 删除指定的行；
 
 -- undo
 -- 1.13 创建和操纵表
+-- 1.13.1 创建表
+-- CREATE TABLE tysql5.products
+-- (
+--  prod_id CHAR(10) NOT NULL,
+--  vend_id CHAR(10) NOT NULL,
+--  prod_name CHAR(254) NOT NULL,
+--  prod_price DECIMAL(8,2) NOT NULL,
+--  prod_desc VARCHAR(1000) NULL
+-- );
+-- 注：如果不指定not null，则默认指定的为null；
+
+-- 指定默认值：常用于日期或者时间戳，如default current_date；
+CREATE TABLE tysql5.orderitems
+(
+ order_num INTEGER NOT NULL,
+ order_item INTEGER NOT NULL,
+ prod_id CHAR(10) NOT NULL,
+ quantity INTEGER NOT NULL DEFAULT 1,   -- 指定默认值
+ item_price DECIMAL(8,2) NOT NULL
+);
+
+-- 1.13.2 表结构变更
+-- （1）理想情况下，不要在表中包含数据时对其进行更新。应该在表的设计过程中充分考虑未来可能的需求，避免今后对表的结构做大改动。
+-- （2） 所有的 DBMS 都允许给现有的表增加列，不过对所增加列的数据类型（以及 NULL 和 DEFAULT 的使用）有所限制。
+-- （3） 许多 DBMS 不允许删除或更改表中的列。
+-- （4）多数 DBMS 允许重新命名表中的列。
+-- （5）许多 DBMS 限制对已经填有数据的列进行更改，对未填有数据的列几乎没有限制。
+-- ALTER TABLE tysql5.vendors ADD vend_phone CHAR(20);
+-- ALTER TABLE tysql5.vendors DROP COLUMN vend_phone;
+-- 注：删除表需要确认的外部依赖：触发器、存储过程、索引和外键；
+
+-- 1.13.3 删除表
+-- DROP TABLE tysql5.custcopy;
+
+-- 1.13.4 重命名表
+
+
+
