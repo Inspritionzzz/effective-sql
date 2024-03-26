@@ -574,6 +574,273 @@ create view tysql5.vendorlocations as
     from vendors;
 
 -- 1.15 存储过程
+-- 为什么要使用存储过程
+-- （1）通过把处理封装在一个易用的单元中，可以简化复杂的操作。
+-- （2）由于不要求反复建立一系列处理步骤，因而保证了数据的一致性。如果所有开发人员和应用程序都使用同一存储过程，则所使用的代码都
+--      是相同的。
+-- （3）上一点的延伸就是防止错误。需要执行的步骤越多，出错的可能性就越大。防止错误保证了数据的一致性。
+-- （4）简化对变动的管理。如果表名、列名或业务逻辑（或别的内容）有变化，那么只需要更改存储过程的代码。
+-- （5）因为存储过程通常以编译过的形式存储，所以 DBMS 处理命令所需的工作量少，提高了性能。
+-- （6）存在一些只能用在单个请求中的 SQL 元素和特性，存储过程可以使用它们来编写功能更强更灵活的代码。
+
+-- 存储过程的缺陷
+-- （1）不同 DBMS 中的存储过程语法有所不同。事实上，编写真正的可移植存储过程几乎是不可能的。不过，存储过程的自我调用（名字以及数
+--      据如何传递）可以相对保持可移植。因此，如果需要移植到别的DBMS，至少客户端应用代码不需要变动。
+-- 注：
+-- 大多数 DBMS 将编写存储过程所需的安全和访问权限与执行存储过程所需的安全和访问权限区分开来。这是好事情，即使你不能（或
+-- 不想）编写自己的存储过程，也仍然可以在适当的时候执行别的存储过程。
+
+-- 1.15.1 执行存储过程
+-- （1）参数可选，具有不提供参数时的默认值。
+-- （2）不按次序给出参数，以“参数=值”的方式给出参数值。
+-- （3）输出参数，允许存储过程在正执行的应用程序中更新所用的参数。
+-- （4）用 SELECT 语句检索数据。
+-- （5）返回代码，允许存储过程返回一个值到正在执行的应用程序。
+
+-- Oracle版本
+-- CREATE PROCEDURE MailingListCount (
+--  ListCount OUT INTEGER
+-- )
+-- IS
+--     v_rows INTEGER;
+-- BEGIN
+--      SELECT COUNT(*) INTO v_rows
+--      FROM Customers
+--      WHERE NOT cust_email IS NULL;
+--      ListCount := v_rows;
+-- END;
+
+-- var ReturnValue NUMBER
+-- EXEC MailingListCount(:ReturnValue);
+-- SELECT ReturnValue;
+
+-- Sql Server
+-- CREATE PROCEDURE MailingListCount
+-- AS
+-- DECLARE @cnt INTEGER
+-- SELECT @cnt = COUNT(*)
+-- FROM Customers
+-- WHERE NOT cust_email IS NULL;
+-- RETURN @cnt;
+
+-- DECLARE @ReturnValue INT
+-- EXECUTE @ReturnValue=MailingListCount;
+-- SELECT @ReturnValue;
+
+-- CREATE PROCEDURE NewOrder @cust_id CHAR(10)
+-- AS
+-- -- 为订单号声明一个变量
+-- DECLARE @order_num INTEGER
+-- -- 获取当前最大订单号
+-- SELECT @order_num=MAX(order_num)
+-- FROM Orders
+-- -- 决定下一个订单号
+-- SELECT @order_num=@order_num+1
+-- -- 插入新订单
+-- INSERT INTO Orders(order_num, order_date, cust_id)
+-- VALUES(@order_num, GETDATE(), @cust_id)
+-- -- 返回订单号
+-- RETURN @order_num;
+
+-- CREATE PROCEDURE NewOrder @cust_id CHAR(10)
+-- AS
+-- -- 插入新订单
+-- INSERT INTO Orders(cust_id)
+-- VALUES(@cust_id)
+-- -- 返回订单号
+-- SELECT order_num = @@IDENTITY;
+
+-- 注：所有DBMS都支持 -- ，因此注释代码最好使用这种语法；
+
+-- 1.16 事务处理
+-- 1.16.1 事务处理
+-- 事务处理：确保成批的sql操作要么完全执行，要么完全不执行，来维护数据库的完整性；
+
+-- 注：
+-- 事务处理用来管理 INSERT、UPDATE 和 DELETE 语句。不能回退 SELECT语句（回退 SELECT 语句也没有必要），也不能回退 CREATE 或
+-- DROP 操作。事务处理中可以使用这些语句，但进行回退时，这些操作也不撤销。
+
+-- SQL Server
+-- BEGIN TRANSACTION
+-- ...
+-- COMMIT TRANSACTION
+
+-- PostgreSQL
+-- BEGIN
+-- ...
+
+-- 注：
+-- 多数实现没有明确标识事务处理在何处结束。事务一直存在，直到被中断。通常，COMMIT 用于保存更改，ROLLBACK 用于撤销；
+-- 1.16.2 ROLLBACK
+DELETE FROM tysql5.orders;
+ROLLBACK;
+select * from tysql5.orders;
+
+-- 1.16.3 COMMIT
+-- 一般的 SQL 语句都是针对数据库表直接执行和编写的。这就是所谓的隐式提交（implicit commit），即提交（写或保存）操作是自动进行的。
+
+-- 1.16.4 保留点
+-- BEGIN TRANSACTION
+--     INSERT INTO Customers(cust_id, cust_name) VALUES(1000000010, 'Toys Emporium');
+-- SAVE TRANSACTION StartOrder;
+--     INSERT INTO Orders(order_num, order_date, cust_id) VALUES(20100,'2001/12/1',1000000010);
+-- IF @@ERROR <> 0 ROLLBACK TRANSACTION StartOrder;
+--     INSERT INTO OrderItems(order_num, order_item, prod_id, quantity, item_price) VALUES(20100, 1, 'BR01', 100, 5.49);
+-- IF @@ERROR <> 0 ROLLBACK TRANSACTION StartOrder;
+--     INSERT INTO OrderItems(order_num, order_item, prod_id, quantity, item_price) VALUES(20100, 2, 'BR03', 100, 10.99);
+-- IF @@ERROR <> 0 ROLLBACK TRANSACTION StartOrder;
+-- COMMIT TRANSACTION
+
+-- 1.17 游标
+-- 为什么使用游标
+-- 有时，需要在检索出来的行中前进或后退一行或多行，这就是游标的用途所在。游标（cursor）是一个存储在 DBMS 服务器上的数据库查询，
+-- 它不是一条 SELECT 语句，而是被该语句检索出来的结果集。在存储了游标之后，应用程序可以根据需要滚动或浏览其中的数据。
+
+-- 游标常见的选项和特性：
+-- （1）能够标记游标为只读，使数据能读取，但不能更新和删除。
+-- （2）能控制可以执行的定向操作（向前、向后、第一、最后、绝对位置和相对位置等）。
+-- （3）能标记某些列为可编辑的，某些列为不可编辑的。
+-- （4）规定范围，使游标对创建它的特定请求（如存储过程）或对所有请求可访问。
+-- （5）指示 DBMS 对检索出的数据（而不是指出表中活动数据）进行复制，使数据在游标打开和访问期间不变化。
+-- 注：
+-- 游标主要用于交互式应用，其中用户需要滚动屏幕上的数据，并对数据进行浏览或做出更改。
+
+-- 使用游标
+-- （1）在使用游标前，必须声明（定义）它。这个过程实际上没有检索数据，它只是定义要使用的 SELECT 语句和游标选项。
+-- （2）一旦声明，就必须打开游标以供使用。这个过程用前面定义的 SELECT语句把数据实际检索出来。
+-- （3） 对于填有数据的游标，根据需要取出（检索）各行。
+-- （4） 在结束游标使用时，必须关闭游标，可能的话，释放游标（有赖于具体的 DBMS）。
+
+-- 创建游标
+declare cursor custcursor is
+select * from tysql5.customers
+where cust_email is null;
+-- 使用游标
+open cursor custcursor;
+-- ...
+-- 关闭游标
+close custcursor
+
+-- 1.18 高级sql特性（约束、索引和触发器）
+-- 1.18.1 约束-主键
+-- CREATE TABLE Vendors
+-- (
+--  vend_id CHAR(10) NOT NULL PRIMARY KEY,
+--  vend_name CHAR(50) NOT NULL,
+--  vend_address CHAR(50) NULL,
+--  vend_city CHAR(50) NULL,
+--  vend_state CHAR(5) NULL,
+--  vend_zip CHAR(10) NULL,
+--  vend_country CHAR(50) NULL
+-- );
+-- alter table tysql5.vendors add constraint primary key (vend_id);
+
+-- 设置为主键的条件：
+-- （1）任意两行的主键值都不相同。
+-- （2）每行都具有一个主键值（即列中不允许 NULL 值）。
+-- （3）包含主键值的列从不修改或更新。（大多数 DBMS 不允许这么做，但如果你使用的 DBMS 允许这样做，好吧，千万别！）
+-- （4）主键值不能重用。如果从表中删除某一行，其主键值不分配给新行。
+
+-- 1.18.2 约束-外键
+-- 外键是表中的一列，其值必须列在另一表的主键中。
+-- CREATE TABLE Orders
+-- (
+--  order_num INTEGER NOT NULL PRIMARY KEY,
+--  order_date DATETIME NOT NULL,
+--  cust_id CHAR(10) NOT NULL REFERENCES Customers(cust_id)
+-- );
+-- ALTER TABLE Orders ADD CONSTRAINT FOREIGN KEY (cust_id) REFERENCES Customers (cust_id);
+
+-- 注：
+--（1）在定义外键后，DBMS 不允许删除在另一个表中具有关联行的行。例如，不能删除关联订单的顾客。删除该顾客的唯一方法是首先删除相
+-- 关的订单（这表示还要删除相关的订单项）。由于需要一系列的删除，因而利用外键可以防止意外删除数据。
+--（2）有的 DBMS 支持称为级联删除（cascading delete）的特性。如果启用，该特性在从一个表中删除行时删除所有相关的数据。
+--    例如，如果启用级联删除并且从 Customers 表中删除某个顾客，则任何关联的订单行也会被自动删除。
+
+-- 1.18.3 约束-唯一约束
+-- 唯一约束既可以用 UNIQUE 关键字在表定义中定义，也可以用单独的 CONSTRAINT 定义。
+-- 唯一约束和主键的区别：
+-- （1）表可包含多个唯一约束，但每个表只允许一个主键。
+-- （2）唯一约束列可包含 NULL 值。
+-- （3）唯一约束列可修改或更新。
+-- （4）唯一约束列的值可重复使用。
+-- （5）与主键不一样，唯一约束不能用来定义外键。
+
+-- 1.18.4 约束-检查约束
+-- 检查约束用来保证一列（或一组列）中的数据满足一组指定的条件。
+-- 检查约束应用场景：
+-- （1）检查最大值或最小值；
+-- （2）指定范围；
+-- （3）只允许特定的值；
+-- CREATE TABLE OrderItems
+-- (
+--  order_num INTEGER NOT NULL,
+--  order_item INTEGER NOT NULL,
+--  prod_id CHAR(10) NOT NULL,
+--  quantity INTEGER NOT NULL CHECK (quantity > 0),
+--  item_price MONEY NOT NULL
+-- );
+-- ADD CONSTRAINT CHECK (gender LIKE '[MF]');
+
+-- 用户定义数据类型：
+-- 有的 DBMS 允许用户定义自己的数据类型。它们是定义检查约束（或其他约束）的基本简单数据类型。例如，你可以定义自己的名为 gender
+-- 的数据类型，它是单字符的文本数据类型，带限制其值为 M 或 F（对于未知值或许还允许 NULL）的检查约束。然后，可以将此数据类型用
+-- 于表的定义。定制数据类型的优点是只需施加约束一次（在数据类型定义中），而每当使用该数据类型时，都会自动应用这些约束。
+
+-- 1.18.5 索引
+-- 索引用来排序数据以加快搜索和排序操作的速度。主键数据总是排序的，这是 DBMS 的工作。因此，按主键检索特定行总是一种快速有效的操作。
+
+-- 使用索引应注意：
+-- （1）索引改善检索操作的性能，但降低了数据插入、修改和删除的性能。在执行这些操作时，DBMS 必须动态地更新索引。
+-- （2）索引数据可能要占用大量的存储空间。
+-- （3）并非所有数据都适合做索引。取值不多的数据（如州）不如具有更多可能值的数据（如姓或名），能通过索引得到那么多的好处。
+-- （4）索引用于数据过滤和数据排序。如果你经常以某种特定的顺序排序数据，则该数据可能适合做索引。
+-- （5）可以在索引中定义多个列。
+-- CREATE INDEX prod_name_ind ON tysql5.products (prod_name);
+
+-- 注：
+-- 索引的效率随表数据的增加或改变而变化。许多数据库管理员发现，过去创建的某个理想的索引经过几个月的数据处理后可能变得不再理
+-- 想了。最好定期检查索引，并根据需要对索引进行调整。
+
+-- 1.18.6 触发器
+-- 触发器是特殊的存储过程，它在特定的数据库活动发生时自动执行。触发器可以与特定表（单个表）上的 INSERT、UPDATE 和 DELETE 操作（或组合）相关联。
+
+-- 触发器内的代码具有以下数据的访问权：
+-- （1）INSERT 操作中的所有新数据；
+-- （2）UPDATE 操作中的所有新数据和旧数据；
+-- （3）DELETE 操作中删除的数据。
+
+-- 触发器的用途：
+-- （1）保证数据一致。例如，在 INSERT 或 UPDATE 操作中将所有州名转换为大写。
+-- （2）基于某个表的变动在其他表上执行活动。例如，每当更新或删除一行时将审计跟踪记录写入某个日志表。
+-- （3）进行额外的验证并根据需要回退数据。例如，保证某个顾客的可用资金不超限定，如果已经超出，则阻塞插入。
+-- （4）计算计算列的值或更新时间戳。
+
+create trigger customer_state
+after insert or update
+for each row
+begin
+    update tysql5.customers
+    set cust_state = upper(cust_state)
+    where customers.cust_id = :old.cust_id;
+end;
+
+-- 注：一般来说，约束的处理比触发器快，因此在可能的时候，应该尽量使用约束。
+
+-- 1.18.7 数据库安全
+-- 安全性使用 SQL 的 GRANT 和 REVOKE 语句来管理。
+-- 常见措施：
+-- （1）对数据库管理功能（创建表、更改或删除已存在的表等）的访问；
+-- （2）对特定数据库或表的访问；
+-- （3）访问的类型（只读、对特定列的访问等）；
+-- （4）仅通过视图或存储过程对表进行访问；
+-- （5）创建多层次的安全措施，从而允许多种基于登录的访问和控制；
+-- （6）限制管理用户账号的能力。
+
+
+
+
+
 
 
 
