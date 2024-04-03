@@ -19,3 +19,9 @@ select
 	column_name, data_type, is_nullable, column_default
 from information_schema.columns
 where table_name = '';
+
+select extract(week from cast(current_timestamp as date))
+
+
+
+-- TITLE、TABLESIZE、CREATETIME、UPDATETIME、SYSTEM_NAME、SCHEMA、DB_NAME
