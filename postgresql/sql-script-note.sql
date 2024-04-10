@@ -160,6 +160,9 @@ select now() + interval '2 Y'; -- 2015-04-12 15:49:28.410853+08 (1 row)
 select now() + interval '2Y'; -- 2015-04-12 15:49:31.122831+08 (1 row)
 select now() + interval '1 month';
 select now() - interval '3 week';
+SELECT age(timestamp '2024-01-01', timestamp '2024-04-01') AS date_difference;
+
+SELECT '2024-01-01'::date - '2024-04-01'::date AS days_difference;
 -- 说明：
 -- interval 可以不写，其值可以是：
 -- Abbreviation	Meaning

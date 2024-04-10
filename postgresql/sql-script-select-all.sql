@@ -20,8 +20,10 @@ select
 from information_schema.columns
 where table_name = '';
 
-select extract(week from cast(current_timestamp as date))
+select extract(week from cast(current_timestamp as date));
 
+select extract(week from cast('20240401' as date));
 
+select extract(week from cast('20240325' as date));
 
 -- TITLE、TABLESIZE、CREATETIME、UPDATETIME、SYSTEM_NAME、SCHEMA、DB_NAME
