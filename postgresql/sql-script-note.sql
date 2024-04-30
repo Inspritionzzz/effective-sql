@@ -199,6 +199,10 @@ from tysql5.products;
 select avg(prod_price) as avg_price
 from tysql5.products
 where vend_id = 'DLL01';
+
+select cast(to_char(current_date - interval '1 day', 'yyyymmdd') as integer); -- 昨日
+
+select to_char(current_date, 'yyyymmdd');
 -- COUNT() 返回某列的行数：如果指定列名，则 COUNT()函数会忽略指定列的值为 NULL 的行，但如果 COUNT()函数中用的是星号（*），则不忽略。
 select count(*) as avg_price -- 使用 COUNT(*)对表中行的数目进行计数，不管表列中包含的是空值（NULL）还是非空值。
 from tysql5.products;
