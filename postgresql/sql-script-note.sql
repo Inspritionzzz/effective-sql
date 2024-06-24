@@ -843,6 +843,17 @@ end;
 -- （4）仅通过视图或存储过程对表进行访问；
 -- （5）创建多层次的安全措施，从而允许多种基于登录的访问和控制；
 -- （6）限制管理用户账号的能力。
+create table temp02
+as
+    select * from public.test_data_table
+with no data;
+
+create table temp02
+as
+    select * from public.test_data_table where false;
+
+create table temp02
+(like public.test_data_table);
 
 
 

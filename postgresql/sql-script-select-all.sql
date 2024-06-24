@@ -22,9 +22,9 @@ where table_name = '';
 
 select extract(week from cast(current_timestamp as date));
 
-select extract(week from cast('20240401' as date));
+select extract(week from cast('20240611' as date));
 
-select extract(week from cast('20240415' as date));
+select extract(week from cast('20240617' as date));
 
 -- TITLE、TABLESIZE、CREATETIME、UPDATETIME、SYSTEM_NAME、SCHEMA、DB_NAME
 
