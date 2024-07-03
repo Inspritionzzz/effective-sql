@@ -27,3 +27,9 @@ select to_char(current_date, 'yyyymmdd');
 -- values('20240611', '主数据', '唯一性', '产品主数据问题', '相同名称的产品重复编制P码', '每日',
 --         '总公司-非自然人客户编码系统', 'CCRM', 'dwodata.ccm_zxjtcrm_jg_prod_new_basic_info', 'dmddata.dq_chk_dtl_ccrm_01'
 --             ,'CCRM-01', '', '信息技术部', 'CCRM-01-相同名称的产品重复编制P码-V1', '20240611', '启用', '');
+
+
+
+
+
+

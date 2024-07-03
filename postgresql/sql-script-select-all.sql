@@ -24,8 +24,11 @@ select extract(week from cast(current_timestamp as date));
 
 select extract(week from cast('20240611' as date));
 
-select extract(week from cast('20240617' as date));
+select extract(week from cast('20240701' as date));
 
 -- TITLE、TABLESIZE、CREATETIME、UPDATETIME、SYSTEM_NAME、SCHEMA、DB_NAME
 
 select length('');
+
+-- 查询视图创建语句
+select pg_get_viewdef('public.all_cb_undel_view') as view_definition;

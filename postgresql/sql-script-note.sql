@@ -855,6 +855,15 @@ as
 create table temp02
 (like public.test_data_table);
 
+-- 授权
+grant select on all tables in schema public to metadata_user;
+
+grant select on all tables in schema public to metadata_user;
+
+grant usage on schema public to metadata_user;
+
+grant select on public.trdcalendar to metadata_user;
+
 
 
 
