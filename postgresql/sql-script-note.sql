@@ -855,16 +855,33 @@ as
 create table temp02
 (like public.test_data_table);
 
--- 授权
-grant select on all tables in schema public to metadata_user;
+-- 权限测试
+select * from practice.advancesql.coursemaster;
+-- 创建新账户
+create user user_group with
+    login
+    password '100037'
+    createdb
+    createrole;
 
-grant select on all tables in schema public to metadata_user;
+-- 授权数据库访问
+grant connect on database artwork to user_group;
 
-grant usage on schema public to metadata_user;
+-- 授权schema访问
+grant usage on schema advancesql to user_group;
 
-grant select on public.trdcalendar to metadata_user;
+-- 授权表访问
+grant select on practice.advancesql.coursemaster to user_group;
 
+-- user_group将表另存一份t1
 
+-- 测试user_group能否将t1表授权
+
+-- 禁止用户的grant权限
+revoke grant option for all tables in schema public from user_group;
+
+-- 开启用户的grant权限
+grant all privileges on schema public to user_group;
 
 
 
