@@ -3375,13 +3375,14 @@ RETURNS BIT
 EXTERNAL NAME testdb.[testdb.digits].RegexIsMatch;
 GO
 
-
-
-
-
 -- juset a test
 
 SELECT dbo.RegexIsMatch(
  N'dejan@solidq.com',
  N'^([\w-]+\.)*?[\w-]+@[\w-]+\.([\w-]+\.)*?[\w]+$');
+
+-- 查看数据库开启的端口号
+SELECT *
+FROM sys.dm_tcp_listener_states;
+
 

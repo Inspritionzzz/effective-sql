@@ -64,3 +64,31 @@ order by numorders;
 -- update dbo.T1 set c1 = c2, c2 = c1;
 -- update dbo.T1 set c1 = c1 + (select max(c1) from dbo.T1);
 
+delete from dbo.orders5 where convert(orderdate = '20070101');
+
+
+select convert(varchar(20), current_timestamp, 112);
+
+select convert(varchar(20), DATEADD(DAY, -1, GETDATE()), 112);
+
+select convert(varchar(20), '', 112);
+
+SELECT [str1]
+      ,[str2]
+      ,[str3]
+      ,[str4]
+  FROM [dbo].[temp_test]
+
+insert into [dbo].[temp_test](str1, str2, str3, str4)
+values('1', '2', '3', '2024-07-23 00:00:00.000');
+insert into [dbo].[temp_test](str1, str2, str3, str4)
+values('1', '2', '3', '2024-07-22 00:00:00.000');
+insert into [dbo].[temp_test](str1, str2, str3, str4)
+values('1', '2', '3', '2024-07-21 00:00:00.000');
+
+select * from [dbo].[temp_test]
+where convert(varchar(20), str4, 112) = convert(varchar(20), DATEADD(DAY, -1, GETDATE()), 112);
+
+SELECT *
+FROM sys.dm_tcp_listener_states;
+
