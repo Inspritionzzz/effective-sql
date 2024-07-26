@@ -883,10 +883,8 @@ revoke grant option for all tables in schema public from user_group;
 -- 开启用户的grant权限
 grant all privileges on schema public to user_group;
 
-
-
-
-
+----------------------------------------------------advance SQL---------------------------------------------------------
+-- 1.
 
 
 
