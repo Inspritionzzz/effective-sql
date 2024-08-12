@@ -21,8 +21,8 @@ from information_schema.columns
 where table_name = '';
 
 select extract(week from cast(current_timestamp as date));
+select extract(week from cast('20240811' as date));
 
-select extract(week from cast('20240611' as date));
 
 select extract(week from cast('20240701' as date));
 
