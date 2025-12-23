@@ -1,3 +1,6 @@
+
+
+
 -- 1.1 简单查询
 select prod_name
 from tysql5.products;
@@ -405,6 +408,10 @@ select
 from tysql5.customers
 left outer join tysql5.orders on customers.cust_id = orders.cust_id
 group by customers.cust_id;
+
+select
+    *
+from customers;
 
 -- 1.10 组合查询
 -- union
@@ -886,6 +893,7 @@ grant all privileges on schema public to user_group;
 ----------------------------------------------------advance SQL---------------------------------------------------------
 -- 1.
 
+-- git test
 
 
 

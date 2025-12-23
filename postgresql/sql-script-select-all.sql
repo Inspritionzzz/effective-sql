@@ -32,3 +32,8 @@ select length('');
 
 -- 查询视图创建语句
 select pg_get_viewdef('public.all_cb_undel_view') as view_definition;
+
+select current_user;
+
+-- 10.16.232.185  crmweb Crmweb_2022
+-- 10.16.232.41   sjglb  sjglb@123
