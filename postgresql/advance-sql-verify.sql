@@ -15,4 +15,7 @@ where stat_cycle = '20250625-20251222' and a.qual_prob_id like '%CCRM%'
 select *
 from customers;
 
+select *
+from customers;
+
 
